@@ -48,12 +48,12 @@ describe(\`Theme: \${cypressThemeName}\`, () => {
   after(() => {
     cy.screenshot(cypressThemeName, {capture: 'runner'})
   })
-})`
+})`;
 
-  const testPath = path.resolve(__dirname, '../cypress/integration', `${cypressThemeName}-theme.spec.js`) //?
+  const testPath = path.resolve(__dirname, '../cypress/integration', `${cypressThemeName}-theme.spec.js`); // ?
   fs.writeFile(testPath, testTemplate, { flag: 'w', encoding: 'utf8' }, (err) => {
     if (err) throw err;
     // print if successful
     console.log(`${cypressThemeName} `);
   });
-}
+};
