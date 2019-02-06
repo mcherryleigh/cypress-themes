@@ -32,7 +32,7 @@ const config = {
     emoji: true,
   },
   app: {
-    title: 'Make-Believe',
+    title: 'Cypress-Themes',
     meta: null,
     base: '/cypress-themes',
     entrance: 'content:readme', // use "api:your-lib" to set the entrance to a JSAPI page
