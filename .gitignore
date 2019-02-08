@@ -1,5 +1,7 @@
 # Project
 .nyc_output
+atom-themes
+test*.js
 
 # Jetbrains IDE
 .idea
