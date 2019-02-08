@@ -18,7 +18,7 @@ const getSourceFolder = () => {
  */
 const convertCssVariables = mycss => postcss([cssVariables()]).process(mycss).css;
 
-const knownThemes = ['dark', 'halloween'];
+const knownThemes = ['dark', 'absent-contrast-rainglow-theme'];
 
 const getHead = () => {
   Cypress.$(parent.window.document.head); // eslint-disable-line no-restricted-globals

@@ -27,14 +27,16 @@
     "docs": "npm run docs-build && npm run docs-serve --path=site_output",
     "docs-build": "node .docma.js > docma.json && node_modules/.bin/docma",
     "docs-serve": "node_modules/.bin/docma serve",
-    "lint": "eslint ./src",
-    "lint-fix": "eslint ./src --fix",
+    "get-rainglow": "git clone https://github.com/rainglow/atom.git atom-themes",
+    "lint": "eslint ./src ./cypress",
+    "lint-fix": "eslint ./src ./cypress --fix",
+    "make-themes": "node src/makeThemes.js",
     "test": "nyc ava",
     "semantic-release": "semantic-release",
     "se": "semantic-release-cli setup"
   },
   "dependencies": {
-    "css2json": "0.0.4",
+    "less-variables-to-json": "^1.0.2",
     "path": "0.12.7",
     "postcss": "7.0.14",
     "postcss-css-variables": "0.11.0"

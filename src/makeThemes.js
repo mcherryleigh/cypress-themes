@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const c2j = require('css2json');
+const lessVariablesToJson = require('less-variables-to-json');
 const makeTest = require('./makeTest');
 
 /*
@@ -8,19 +8,19 @@ const makeTest = require('./makeTest');
  * adjusting with other sets warning/danger particularly
  */
 async function getColors(lessFile) {
-  const colors = await c2j(lessFile); // ?
+  const colors = await lessVariablesToJson(lessFile);
   return {
-    grayDarker: '#222',
-    grayDark: '#333',
-    gray: '#555',
+    grayDarker: colors['@syntax-gutter-background-color'],
+    grayDark: colors['@syntax-background-color'],
+    gray: colors['@syntax-wrap-guide-color'],
     grayLight: '#999',
     grayLighter: '#eee',
-    brandPrimary: colors['.p1-k'],
-    brandSuccess: colors['p1-c1'],
-    brandInfo: colors['p1-e'],
-    brandWarning: '#800080', // TODO find mapping
-    brandDanger: '#800080', // TODO find mapping
-    textColor: colors['.p1-s1'].color,
+    brandPrimary: colors['@syntax-selection-color'],
+    brandSuccess: colors['@syntax-color-added'],
+    brandInfo: colors['@syntax-color-modified'],
+    brandWarning: colors['@syntax-color-removed'], // TODO find mapping
+    brandDanger: colors['@syntax-selection-flash-color'], // TODO find mapping
+    textColor: colors['@syntax-text-color'],
   };
 }
 
@@ -309,31 +309,29 @@ li.suite.runnable.runnable-failed > div > div.collapsible-header.runnable-wrappe
   return theme;
 };
 
-const walkSync = (dir, filelist = []) => {
-  let allFilePaths = filelist;
+const walkSync = (dir) => {
+  let filelist = [];
   fs.readdirSync(dir).forEach((file) => {
-    allFilePaths = fs.statSync(path.join(dir, file)).isDirectory()
-      ? walkSync(path.join(dir, file), filelist)
-      : filelist.concat(path.join(dir, file));
+    filelist = filelist.concat(path.join(dir, file));
   });
-  return allFilePaths;
+  return filelist;
 };
 
-walkSync('./syntax/themes/github/themes/').forEach((filePath) => {
+walkSync('./atom-themes/themes/').forEach((filePath) => {
   // get the current rainglow theme to convert
-  const cssInput = fs.readFileSync(filePath, 'UTF-8');
+  const lessInput = fs.readFileSync(`${filePath}/styles/syntax-variables.less`, 'UTF-8');
   // grab color codes from rainglow and use them to make the cypress theme
-  const cypressThemeColors = getColors(cssInput);
+  const cypressThemeColors = getColors(lessInput);
   const cypressThemeStyles = makeCypressTheme(cypressThemeColors);
   // metadata for saving the theme and test to file
-  const cypressThemeName = path.basename(filePath).replace('.css', '');
+  const cypressThemeName = path.parse(filePath).name.replace('-syntax', '');
   const cypressThemePath = path.resolve(__dirname, 'themes', `${cypressThemeName}.css`); // ?
 
-  fs.writeFile(cypressThemePath, cypressThemeStyles, { flag: 'w', encoding: 'utf8' }, (err) => {
+  fs.writeFileSync(cypressThemePath, cypressThemeStyles, { flag: 'w', encoding: 'utf8' }, (err) => {
     if (err) throw err;
 
     // print if theme was successful
-    console.log(`${cypressThemeName} saved`);
+    console.log(`${cypressThemeName} saved at ${cypressThemePath}`);
   });
 
   makeTest(cypressThemeName);
